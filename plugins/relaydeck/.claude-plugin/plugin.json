@@ -1,0 +1,46 @@
+{
+  "name": "relaydeck",
+  "displayName": "Relaydeck",
+  "version": "1.2.0",
+  "description": "Two-way tasks between your agent and the Relaydeck app on iPhone, iPad, and Apple Watch: the agent reports its work, and it gets your tasks, answers, and messages.",
+  "author": {
+    "name": "Aayush9029",
+    "url": "https://github.com/Aayush9029"
+  },
+  "homepage": "https://relaydeck.onrender.com",
+  "repository": "https://github.com/Aayush9029/mcp-server",
+  "license": "MIT",
+  "keywords": ["tasks", "notifications", "ios", "apple-watch"],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Relaydeck API key",
+      "description": "Create a key in the Relaydeck iOS app. The key starts with mck_.",
+      "required": true,
+      "sensitive": true
+    },
+    "idle_watch_minutes": {
+      "type": "number",
+      "title": "Minutes to listen while the agent waits",
+      "description": "After the agent stops, the plugin listens for new inbox items for this many minutes and wakes the agent when one comes. Set 0 to turn this off.",
+      "default": 480,
+      "min": 0,
+      "max": 1440
+    },
+    "host_name": {
+      "type": "string",
+      "title": "Name of this machine",
+      "description": "The Relaydeck app shows this name for the agent. Use the short host name of this machine, for example work-mac."
+    }
+  },
+  "mcpServers": {
+    "tasks": {
+      "type": "http",
+      "url": "https://relaydeck.onrender.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_key}",
+        "X-Relaydeck-Host": "${user_config.host_name}"
+      }
+    }
+  }
+}

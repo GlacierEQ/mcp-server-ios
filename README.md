@@ -1,15 +1,11 @@
-> [!NOTE]  
-> iOS app can be downloaded here
->
->  https://apps.apple.com/app/apple-store/id6746345658
-
+> [!NOTE]
+> **Relaydeck** is now available on the [App Store](https://apps.apple.com/app/id6821470281) for iPhone, iPad, and Apple Watch.
 
 # MCP Client for iOS
 
-[![Auto Release](https://github.com/Aayush9029/mcp-server/actions/workflows/auto-release.yml/badge.svg)](https://github.com/Aayush9029/mcp-server/actions/workflows/auto-release.yml)
-[![pages-build-deployment](https://github.com/Aayush9029/mcp-server/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Aayush9029/mcp-server/actions/workflows/pages/pages-build-deployment)
-[![PyPI version](https://badge.fury.io/py/task-mcp.svg)](https://pypi.org/project/task-mcp/)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+[![CI](https://github.com/Aayush9029/mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/Aayush9029/mcp-server/actions/workflows/ci.yml)
+![MCP](https://img.shields.io/badge/MCP-2026--07--28-8b5cf6.svg)
+![Python](https://img.shields.io/badge/python-3.13-blue.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 <p>
@@ -18,7 +14,7 @@
 
 </p>
 
-### Verified with 
+### Verified with
 <img src="https://github.com/user-attachments/assets/c05449f1-4da8-4228-9bba-6821f70a3ab8" width="40px" />
 <img src="https://github.com/user-attachments/assets/caa206db-bf97-4376-81c1-20d542d5963a" width="40px" />
 <img src="https://github.com/user-attachments/assets/c2cbc255-af9b-4683-ba12-c36a4b1e6268" width="40px" />
@@ -30,15 +26,17 @@
 
 Bridge AI assistants with real-world task management
 
-This MCP server connects Claude Desktop, Cursor, and other AI tools to a powerful task management API, enabling intelligent workflows that create, update, and track tasks automatically on your iPhone.
+This MCP server connects Claude Code, Cursor, Codex, and other AI tools to your iPhone, iPad, and Apple Watch. Your agents create, update, and track tasks, and your devices show each change live.
 
 ### What You Can Do
 
 - Ask Claude to create tasks during coding sessions
 - Let Cursor update task status as it completes work
 - Get notifications on your iPhone when AI assistants finish tasks
+- Follow work in progress with a Live Activity on the Lock Screen
+- Answer your agent's questions from the notification
+- Assign a task or send a message from your phone, and your agent picks it up
 - Track progress across multiple AI tools and automation scripts
-- Manage priorities with AI-suggested urgency levels
 
 Perfect for developers who want their AI assistants to collaborate on real projects with automatic task tracking and mobile notifications.
 
@@ -46,26 +44,31 @@ Perfect for developers who want their AI assistants to collaborate on real proje
 
 ### 1. Get Your API Key
 
-Download the iOS app [here](https://apps.apple.com/app/apple-store/id6746345658)
+[Download Relaydeck](https://apps.apple.com/app/id6821470281), open the app, and create a key for each agent.
 
-### 2. Choose Your Setup
+### 2. Connect Your Agents
 
-#### For Claude Desktop (Recommended)
+```bash
+curl -fsSL https://relaydeck.onrender.com/install | sh
+```
 
-Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Choose one agent with the arrow keys, paste its key from the app, then connect. Escape goes back. After setup, choose another agent and use a new key. The menu uses [Gum](https://github.com/charmbracelet/gum), downloaded temporarily if needed. For unattended setup, pass `--agents cursor --yes` and set `RELAYDECK_API_KEY` to Cursor's key. Or set up one agent by hand:
 
-```json
-{
-  "mcpServers": {
-    "task-manager": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "https://task-mcp-server.aayushpokharel9029.workers.dev/sse?apiKey=YOUR_API_KEY"
-      ]
-    }
-  }
-}
+#### For Claude Code
+
+```
+/plugin marketplace add Aayush9029/mcp-server
+/plugin install relaydeck@relaydeck
+```
+
+Claude Code asks for your API key one time and keeps it in the Keychain.
+
+#### For Codex
+
+```bash
+export TASKS_API_KEY=YOUR_API_KEY
+codex plugin marketplace add Aayush9029/mcp-server
+codex plugin add relaydeck@relaydeck
 ```
 
 #### For Cursor or Other MCP Clients
@@ -73,8 +76,9 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "task-manager": {
-      "url": "https://task-mcp-server.aayushpokharel9029.workers.dev/sse?apiKey=YOUR_API_KEY"
+    "tasks": {
+      "url": "https://relaydeck.onrender.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
@@ -89,58 +93,37 @@ Once configured, your AI assistant can:
 - "Create a high-priority task to review the pull request"
 - "Show me all pending tasks"
 - "Mark the deployment task as completed"
-- "Update the bug fix to urgent priority"
+- "Ping my phone when the migration is done"
+- "Ask me before you deploy to production"
 
 ## Available Tools
 
-The server provides these capabilities to AI assistants:
+<details>
+<summary>Eleven tools for your agents</summary>
 
-### `create_task`
-Create new tasks with title, description, priority, and notification settings.
+| Tool | What it does |
+|------|--------------|
+| `create_task` | Create a task with title, description, priority, and notification settings |
+| `list_tasks` | List tasks, with optional filters for status and priority |
+| `get_task` | Get the details of one task |
+| `update_task` | Change status, priority, progress, and the live status note |
+| `delete_task` | Delete a task |
+| `notify_user` | Send a push notification to your devices |
+| `ask_user` | Ask you a yes-or-no, multiple-choice, or free-text question |
+| `get_answer` | Wait for your answer to a question |
+| `check_inbox` | Read new tasks, changes, and messages that you send from the app |
+| `send_message` | Send a message to a different agent on your account |
+| `list_agents` | List the other agents on your account |
 
-### `list_tasks`
-View all tasks with optional filtering by status, priority, or date.
-
-### `get_task`
-Get detailed information about any specific task.
-
-### `update_task`
-Modify task properties including status, priority, and description.
-
-### `delete_task`
-Remove completed or cancelled tasks.
-
-## Technical Details
-
-### Documentation
-
-- **REST API Documentation**:
-  - [FastAPI Docs](https://mcpclient.lovedoingthings.com/docs)
-  - [ReDoc](https://mcpclient.lovedoingthings.com/redoc#tag/Tasks/operation/create_task_api_tasks__post)
-- **MCP Server Documentation**: [https://task-mcp-server.aayushpokharel9029.workers.dev](https://task-mcp-server.aayushpokharel9029.workers.dev)
-
-### API Details
-
-- **Authentication**: API key via `X-API-Key` header
-- **Supported Priorities**: LOW, MEDIUM, HIGH, URGENT
-- **Supported Statuses**: TODO, IN_PROGRESS, DONE, CANCELLED
+</details>
 
 ## Security & Privacy
 
 - **API Key Isolation**: Each key maintains completely separate task data
 - **No Cross-Access**: Tasks are never shared between different API keys
-- **Secure Communication**: All requests require authentication headers
-- **Real-time Updates**: Changes sync instantly to your iPhone app
-
-## Need Help?
-
-If your AI assistant isn't connecting:
-
-1. Check that your API key is correctly formatted
-2. Verify the configuration file location
-3. Restart your MCP client after configuration changes
-
-For issues or feature requests, visit the [GitHub Issues](https://github.com/Aayush9029/mcp-server/issues).
+- **Hashed Credentials**: The server stores only a hash of each key
+- **No Account Details**: No email, no password, no tracking
+- **Real-time Updates**: Changes sync instantly to your devices
 
 ---
 
